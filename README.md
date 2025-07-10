@@ -37,39 +37,42 @@
 ## 🧩 Database Schema
 
 ### Users
-| Field     | Type    |
-|-----------|---------|
-| id        | Integer |
-| name      | String  |
-| email     | String  |
-| password  | String  |
-| phone     | String  |
-| role      | Enum (`admin` / `tenant`) |
-| created_at | Timestamp |
+|| Field      | Type                      | Notes                                   |
+| ---------- | ------------------------- | --------------------------------------- |
+| id         | Integer (auto-generate)   | Primary key, auto-incremented           |
+| name       | String                    | Full name of the user                   |
+| email      | String                    | Must be unique, used for login/identity |
+| password   | String                    | Hashed password                         |
+| phone      | String                    | Optional or required based on use case  |
+| role       | Enum (`admin` / `tenant`) | Defines user access level               |
+| created_at | Timestamp                 | Automatically set when user is created  |
 
-### Listings
-| Field        | Type    |
-|--------------|---------|
-| id           | Integer |
-| title        | String  |
-| description  | Text    |
-| location     | String  |
-| price        | Decimal |
-| rooms        | Integer |
-| images       | JSON/String[] |
-| is_available | Boolean |
-| created_by   | FK (User) |
-| created_at   | Timestamp |
+### Property
+| Field         | Type            | Notes                                              |
+| ------------- | --------------- | -------------------------------------------------- |
+| id            | Integer (PK)    | Auto-increment primary key                         |
+| title         | String          | Max length: 200                                    |
+| description   | Text            | Full description                                   |
+| city          | String          | Which city                                         |
+| neighbourhood | String          | Neighbourhood or local area                        |
+| price         | Decimal(10,2)   | Rent amount                                        |
+| bedrooms      | Integer         | Total of bedrooms                                  |
+| bathrooms     | integer         | Number of bathrooms                                |
+| images        | JSON / String[] | store image URLs                                   |
+| is_available  | Boolean         | From `is_available`                                |
+| created_by    | Integer (FK)    | Foreign key to Users table                         |
+| created_at    | Timestamp       | Sequelize typically auto-generates this            |
+| property_type | Enum            | apartment, house, condo, studio, bedsitter, single |
 
 ### Inquiries
-| Field      | Type    |
-|------------|---------|
-| id         | Integer |
-| listing_id | FK (Listing) |
-| tenant_id  | FK (User) |
-| message    | Text    |
-| status     | Enum(`pending`, `viewed`, `responded`) |
-| created_at | Timestamp |
+| Field      | Type                                   | Notes                                             |
+| ---------- | -------------------------------------- | ------------------------------------------------- |
+| id         | Integer                                | Primary key, auto-incremented                     |
+| listing_id | FK (Listing)                           | References the related property/listing           |
+| tenant_id  | FK (User)                              | References the user (tenant) who made the inquiry |
+| message    | Text                                   | The content of the inquiry message                |
+| status     | Enum(`pending`, `viewed`, `responded`) | Tracks the inquiry's current state                |
+| created_at | Timestamp                              | Timestamp of when the inquiry was created         |
 
 ---
 
