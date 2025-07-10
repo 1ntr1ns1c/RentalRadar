@@ -1,5 +1,6 @@
 import { createContext, useState } from 'react';
 import type { ReactNode } from 'react';
+import * as api from '../lib/api';
 
 interface User {
   id: number;
@@ -11,13 +12,15 @@ interface User {
 
 interface AuthContextProps {
   user: User | null;
-  login: (userData: User) => void;
+  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  register: (name: string, email: string, password: string, role: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
 }
 
 export const AuthContext = createContext<AuthContextProps>({
   user: null,
-  login: () => {},
+  login: async () => ({ success: false }),
+  register: async () => ({ success: false }),
   logout: () => {},
 });
 
@@ -26,9 +29,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     JSON.parse(localStorage.getItem('rentalradar-user') || 'null')
   );
 
-  const login = (userData: User) => {
-    localStorage.setItem('rentalradar-user', JSON.stringify(userData));
-    setUser(userData);
+  const login = async (email: string, password: string) => {
+    try {
+      const res = await api.login({ email, password });
+      const userData = res.data;
+      localStorage.setItem('rentalradar-user', JSON.stringify(userData));
+      setUser(userData);
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err.response?.data?.message || 'Login failed' };
+    }
+  };
+
+  const register = async (name: string, email: string, password: string, role: string) => {
+    try {
+      const res = await api.register({ name, email, password, role });
+      const userData = res.data;
+      localStorage.setItem('rentalradar-user', JSON.stringify(userData));
+      setUser(userData);
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err.response?.data?.message || 'Registration failed' };
+    }
   };
 
   const logout = () => {
@@ -37,7 +59,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );
