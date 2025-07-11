@@ -6,6 +6,7 @@ import Register from  './pages/Register.tsx'
 import Dashboard from './pages/Dashboard';
 import Navbar from './components/Navbar';
 import PropertiesPage from './pages/Properties.tsx';
+import PropertyDetail from './pages/PropertyDetail.tsx';
 import Contact from './pages/Contact.tsx';
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/properties" element={<PropertiesPage />} />
+          <Route path="/properties/:id" element={<PropertyDetail />} />
           <Route path="/contact" element={<Contact />} />
         </Routes>
       </Router>
