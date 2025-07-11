@@ -2,6 +2,7 @@ import { useContext, useState, useEffect } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import * as api from '../lib/api';
+import { uploadImage } from '../lib/cloudinary';
 
 export default function DashboardPage() {
   const { user } = useContext(AuthContext);
@@ -25,6 +26,7 @@ export default function DashboardPage() {
   });
   const [addError, setAddError] = useState('');
   const [addLoading, setAddLoading] = useState(false);
+  const [imageUploading, setImageUploading] = useState(false);
 
   // Fetch landlord's properties
   useEffect(() => {
@@ -80,8 +82,44 @@ export default function DashboardPage() {
     setNewProperty({ ...newProperty, [e.target.name]: e.target.value });
   };
 
-  const handleAddImageUrl = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewProperty({ ...newProperty, images: [e.target.value] });
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    // Validate files
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      if (!file.type.startsWith('image/')) {
+        setAddError('Please select valid image files only');
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        setAddError('Each image must be less than 5MB');
+        return;
+      }
+    }
+
+    setImageUploading(true);
+    setAddError('');
+
+    try {
+      const uploadPromises = Array.from(files).map(file => uploadImage(file));
+      const imageUrls = await Promise.all(uploadPromises);
+      setNewProperty({ 
+        ...newProperty, 
+        images: [...(newProperty.images || []), ...imageUrls] 
+      });
+    } catch (error) {
+      setAddError('Failed to upload one or more images. Please try again.');
+    } finally {
+      setImageUploading(false);
+    }
+  };
+
+  const removeImage = (index: number) => {
+    const updatedImages = [...(newProperty.images || [])];
+    updatedImages.splice(index, 1);
+    setNewProperty({ ...newProperty, images: updatedImages });
   };
 
   const handleAddProperty = async (e: React.FormEvent) => {
@@ -238,7 +276,7 @@ export default function DashboardPage() {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="text-sm font-medium text-gray-900">
-                              {Number(property.price).toFixed(2)}/month
+                              ${Number(property.price).toFixed(2)}/month
                             </div>
                             <div className="text-sm text-gray-500">
                               {property.bedrooms} bed • {property.bathrooms} bath
@@ -285,8 +323,8 @@ export default function DashboardPage() {
 
       {/* Add Property Modal */}
       {showAddProperty && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center p-4 z-50 overflow-y-auto">
+          <div className="bg-white rounded-lg p-6 w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl my-8 max-h-[90vh] overflow-y-auto">
             <h2 className="text-xl font-bold mb-4">Add New Property</h2>
             {addError && <div className="text-red-600 mb-2 text-center">{addError}</div>}
             <form className="space-y-4" onSubmit={handleAddProperty}>
@@ -386,15 +424,43 @@ export default function DashboardPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Image URL</label>
+                <label className="block text-sm font-medium text-gray-700">Property Images</label>
                 <input
-                  type="text"
-                  name="imageUrl"
-                  value={newProperty.images[0] || ''}
-                  onChange={handleAddImageUrl}
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleImageUpload}
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Paste image URL or upload below"
+                  disabled={imageUploading}
                 />
+                <p className="text-xs text-gray-500 mt-1">You can select multiple images. Each image should be less than 5MB.</p>
+                {imageUploading && (
+                  <p className="text-sm text-blue-600 mt-1">Uploading images...</p>
+                )}
+                {newProperty.images && newProperty.images.length > 0 && (
+                  <div className="mt-3">
+                    <p className="text-sm font-medium text-gray-700 mb-2">Uploaded Images ({newProperty.images.length})</p>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                      {newProperty.images.map((image: string, index: number) => (
+                        <div key={index} className="relative">
+                          <img 
+                            src={image} 
+                            alt={`Property preview ${index + 1}`} 
+                            className="w-full h-20 object-cover rounded border"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeImage(index)}
+                            className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600"
+                            title="Remove image"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
               <div className="flex gap-4">
                 <button
@@ -407,7 +473,7 @@ export default function DashboardPage() {
                 <button
                   type="submit"
                   className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
-                  disabled={addLoading}
+                  disabled={addLoading || imageUploading}
                 >
                   {addLoading ? 'Adding...' : 'Add Property'}
                 </button>
