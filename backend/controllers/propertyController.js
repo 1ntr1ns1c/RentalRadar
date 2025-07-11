@@ -21,6 +21,12 @@ exports.createProperty = async (req, res) => {
   }
   try {
     const { title, description, city, neighbourhood, price, bedrooms, bathrooms, images, property_type } = req.body;
+    
+    // Debug: Log the images being saved
+    console.log('Images being saved:', images);
+    console.log('Type of images:', typeof images);
+    console.log('Is array?', Array.isArray(images));
+    
     const property = await Property.create({
       title,
       description,
@@ -34,6 +40,11 @@ exports.createProperty = async (req, res) => {
       created_by: user.id,
       property_type,
     });
+    
+    // Debug: Log what was actually saved
+    console.log('Property saved with images:', property.images);
+    console.log('Type of saved images:', typeof property.images);
+    
     res.status(201).json(property);
   } catch (err) {
     res.status(500).json({ message: 'Failed to create property', error: err.message });
@@ -49,6 +60,14 @@ exports.getAllProperties = async (req, res) => {
     if (req.query.is_available !== undefined) where.is_available = req.query.is_available;
     // Add more filters as needed
     const properties = await Property.findAll({ where });
+    
+    // Debug: Log the first property's images to see the structure
+    if (properties.length > 0) {
+      console.log('First property images:', properties[0].images);
+      console.log('Type of images:', typeof properties[0].images);
+      console.log('Is array?', Array.isArray(properties[0].images));
+    }
+    
     res.json(properties);
   } catch (err) {
     res.status(500).json({ message: 'Failed to fetch properties', error: err.message });
