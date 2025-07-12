@@ -101,10 +101,10 @@
 ## 🌍 Deployment Plan
 | Component  | Platform     |
 |------------|--------------|
-| Frontend   | Vercel / Netlify |
-| Backend    | Railway / Render |
-| Database   | Hosted MySQL or PlanetScale |
-| Media      | Cloudinary |
+| Frontend   | Vercel       |
+| Backend    | Railway      |
+| Database   | PlanetScale  |
+| Media      | Cloudinary   |
 
 ---
 
