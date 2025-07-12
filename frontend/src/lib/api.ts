@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:5000/api',
+  // baseURL: 'http://localhost:5000/api', //local host
+  baseURL: import.meta.env.VITE_API_URL || 'https://rentalradar-production.up.railway.app/api',
   withCredentials: false, // Set to true if using cookies for auth
 });
 
