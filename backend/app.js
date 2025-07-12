@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const sequelize = require('./config/db');
 const authRoutes = require('./routes/auth');
 const propertyRoutes = require('./routes/properties');
+const inquiryRoutes = require('./routes/inquiries');
 
 dotenv.config();
 
@@ -13,6 +14,7 @@ app.use(cors());
 app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/properties', propertyRoutes);
+app.use('/api/inquiries', inquiryRoutes);
 
 // TODO: Register routes here
 

@@ -19,6 +19,10 @@ const Inquiry = sequelize.define('Inquiry', {
     type: DataTypes.TEXT,
     allowNull: false,
   },
+  landlord_response: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
   status: {
     type: DataTypes.ENUM('pending', 'viewed', 'responded'),
     defaultValue: 'pending',
