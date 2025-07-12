@@ -1,6 +1,7 @@
 import { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import { FaUserCircle } from 'react-icons/fa';
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
@@ -34,6 +35,14 @@ const Navbar = () => {
             >
               Properties
             </Link>
+            {user && (
+              <Link 
+                to="/inquiries" 
+                className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
+              >
+                Inquiries
+              </Link>
+            )}
             <Link 
               to="/contact" 
               className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
@@ -54,12 +63,32 @@ const Navbar = () => {
                     Dashboard
                   </Link>
                 )}
-                <button
-                  onClick={logout}
-                  className="bg-red-500 text-white px-4 py-1.5 rounded-md hover:bg-red-600 transition-colors"
-                >
-                  Logout
-                </button>
+                {/* User Icon Dropdown */}
+                <div className="relative">
+                  <button
+                    onClick={() => setIsOpen(!isOpen)}
+                    className="flex items-center focus:outline-none"
+                  >
+                    <FaUserCircle className="text-2xl text-gray-700 hover:text-blue-600" />
+                  </button>
+                  {isOpen && (
+                    <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow-lg z-50">
+                      <Link
+                        to="/profile"
+                        className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        Edit Profile
+                      </Link>
+                      <button
+                        onClick={() => { logout(); setIsOpen(false); }}
+                        className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  )}
+                </div>
               </>
             ) : (
               <>
@@ -115,6 +144,15 @@ const Navbar = () => {
             >
               Properties
             </Link>
+            {user && (
+              <Link 
+                to="/inquiries" 
+                className="block py-2 px-4 text-gray-700 hover:bg-gray-100 rounded transition-colors"
+                onClick={() => setIsOpen(false)}
+              >
+                Inquiries
+              </Link>
+            )}
             <Link 
               to="/contact" 
               className="block py-2 px-4 text-gray-700 hover:bg-gray-100 rounded transition-colors"
@@ -122,7 +160,6 @@ const Navbar = () => {
             >
               Contact Us
             </Link>
-            
             {user ? (
               <>
                 {user.role === 'landlord' && (
@@ -134,15 +171,30 @@ const Navbar = () => {
                     Dashboard
                   </Link>
                 )}
-                <button
-                  onClick={() => {
-                    logout();
-                    setIsOpen(false);
-                  }}
-                  className="block w-full text-left py-2 px-4 text-red-600 hover:bg-red-50 rounded transition-colors"
-                >
-                  Logout
-                </button>
+                {/* User Icon Dropdown for Mobile */}
+                <div className="relative">
+                  <button
+                    onClick={() => setIsOpen(!isOpen)}
+                    className="flex items-center focus:outline-none mt-2"
+                  >
+                    <FaUserCircle className="text-2xl text-gray-700 hover:text-blue-600" />
+                  </button>
+                  <div className="mt-2 w-40 bg-white border rounded shadow-lg z-50">
+                    <Link
+                      to="/profile"
+                      className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      Edit Profile
+                    </Link>
+                    <button
+                      onClick={() => { logout(); setIsOpen(false); }}
+                      className="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                </div>
               </>
             ) : (
               <>

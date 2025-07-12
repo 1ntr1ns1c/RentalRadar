@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import * as api from '../lib/api';
+import { AuthContext } from '../context/AuthContext';
 import ImageGallery from '../components/ImageGallery';
 
 interface Property {
@@ -20,9 +21,13 @@ interface Property {
 
 export default function PropertyDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const { user } = useContext(AuthContext);
   const [property, setProperty] = useState<Property | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [inquiryMessage, setInquiryMessage] = useState('');
+  const [sendingInquiry, setSendingInquiry] = useState(false);
+  const [inquirySuccess, setInquirySuccess] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -59,6 +64,26 @@ export default function PropertyDetailPage() {
       </div>
     );
   }
+
+  const handleSendInquiry = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inquiryMessage.trim() || !user) return;
+
+    setSendingInquiry(true);
+    try {
+      await api.sendInquiry({
+        listing_id: property!.id,
+        message: inquiryMessage
+      }, user.token);
+      setInquirySuccess(true);
+      setInquiryMessage('');
+      setTimeout(() => setInquirySuccess(false), 3000);
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to send inquiry');
+    } finally {
+      setSendingInquiry(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -117,11 +142,49 @@ export default function PropertyDetailPage() {
             <p className="text-gray-700 leading-relaxed">{property.description}</p>
           </div>
 
-          {/* Contact Button */}
+          {/* Contact/Inquiry Section */}
           <div className="border-t pt-6">
-            <button className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors font-semibold">
-              Contact Landlord
-            </button>
+            {user && user.role === 'tenant' ? (
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Send Inquiry</h3>
+                {inquirySuccess && (
+                  <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                    Inquiry sent successfully!
+                  </div>
+                )}
+                <form onSubmit={handleSendInquiry} className="space-y-4">
+                  <textarea
+                    value={inquiryMessage}
+                    onChange={(e) => setInquiryMessage(e.target.value)}
+                    placeholder="Write your message to the landlord..."
+                    className="w-full p-3 border border-gray-300 rounded-lg resize-none"
+                    rows={4}
+                    required
+                  />
+                  <button
+                    type="submit"
+                    disabled={sendingInquiry || !inquiryMessage.trim()}
+                    className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors font-semibold disabled:bg-gray-400"
+                  >
+                    {sendingInquiry ? 'Sending...' : 'Send Inquiry'}
+                  </button>
+                </form>
+              </div>
+            ) : user && user.role === 'landlord' ? (
+              <div className="text-center">
+                <p className="text-gray-600 mb-4">This is your property listing.</p>
+                <button className="bg-gray-400 text-white py-3 px-6 rounded-lg font-semibold cursor-not-allowed">
+                  Your Property
+                </button>
+              </div>
+            ) : (
+              <div className="text-center">
+                <p className="text-gray-600 mb-4">Please log in as a tenant to send inquiries.</p>
+                <button className="bg-gray-400 text-white py-3 px-6 rounded-lg font-semibold cursor-not-allowed">
+                  Contact Landlord
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

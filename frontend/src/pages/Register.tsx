@@ -27,7 +27,9 @@ export default function RegisterPage() {
     setLoading(false);
     if (res.success) {
       setSuccess(true);
-      setTimeout(() => navigate('/dashboard'), 1000);
+      // Redirect tenants to profile page, landlords to dashboard
+      const redirectPath = form.role === 'tenant' ? '/profile' : '/dashboard';
+      setTimeout(() => navigate(redirectPath), 1000);
     } else {
       setError(res.error || 'Registration failed');
     }

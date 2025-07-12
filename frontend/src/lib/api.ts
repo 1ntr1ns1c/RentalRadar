@@ -12,6 +12,14 @@ export const register = (data: { name: string; email: string; password: string; 
 export const login = (data: { email: string; password: string }) =>
   api.post('/auth/login', data);
 
+export const changePassword = (data: { currentPassword: string; newPassword: string; token: string }) =>
+  api.post('/auth/change-password', {
+    currentPassword: data.currentPassword,
+    newPassword: data.newPassword,
+  }, {
+    headers: { Authorization: `Bearer ${data.token}` }
+  });
+
 // --- Properties ---
 export const getProperties = (params?: any) =>
   api.get('/properties', { params });
@@ -34,6 +42,9 @@ export const sendInquiry = (data: any, token?: string) =>
 
 export const getInquiries = (params: any, token: string) =>
   api.get('/inquiries', { params, headers: { Authorization: `Bearer ${token}` } });
+
+export const respondToInquiry = (inquiryId: number, data: any, token: string) =>
+  api.post(`/inquiries/${inquiryId}/respond`, data, { headers: { Authorization: `Bearer ${token}` } });
 
 export const updateInquiryStatus = (id: number, status: string, token: string) =>
   api.put(`/inquiries/${id}/status`, { status }, { headers: { Authorization: `Bearer ${token}` } });
