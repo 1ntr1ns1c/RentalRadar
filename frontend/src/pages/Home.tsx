@@ -17,12 +17,12 @@ export default function HomePage() {
         const available = response.data.filter((p: any) => p.is_available).slice(0, 6);
         
         // Debug: Log the first property to see the structure
-        if (available.length > 0) {
-          console.log('First property data:', available[0]);
-          console.log('Images from first property:', available[0].images);
-          console.log('Type of images:', typeof available[0].images);
-          console.log('Is array?', Array.isArray(available[0].images));
-        }
+        // if (available.length > 0) {
+        //   console.log('First property data:', available[0]);
+        //   console.log('Images from first property:', available[0].images);
+        //   console.log('Type of images:', typeof available[0].images);
+        //   console.log('Is array?', Array.isArray(available[0].images));
+        // }
         
         setFeaturedProperties(available);
       } catch (err) {

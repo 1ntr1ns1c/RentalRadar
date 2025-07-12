@@ -10,9 +10,9 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({ images, alt, className = ""
   const [currentIndex, setCurrentIndex] = useState(0);
 
   // Debug: Log the images prop
-  console.log('ImageGallery received images:', images);
-  console.log('Type of images:', typeof images);
-  console.log('Is array?', Array.isArray(images));
+  // console.log('ImageGallery received images:', images);
+  // console.log('Type of images:', typeof images);
+  // console.log('Is array?', Array.isArray(images));
 
   if (!images || images.length === 0) {
     return (

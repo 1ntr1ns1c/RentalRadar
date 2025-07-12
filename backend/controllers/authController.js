@@ -54,4 +54,24 @@ exports.login = async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: 'Login failed', error: err.message });
   }
+};
+
+exports.changePassword = async (req, res) => {
+  try {
+    const user = req.user;
+    const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: 'Current and new password are required.' });
+    }
+    const match = await bcrypt.compare(currentPassword, user.password);
+    if (!match) {
+      return res.status(401).json({ message: 'Current password is incorrect.' });
+    }
+    const hashed = await bcrypt.hash(newPassword, 10);
+    user.password = hashed;
+    await user.save();
+    res.json({ message: 'Password changed successfully.' });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to change password', error: err.message });
+  }
 }; 

@@ -23,9 +23,9 @@ exports.createProperty = async (req, res) => {
     const { title, description, city, neighbourhood, price, bedrooms, bathrooms, images, property_type } = req.body;
     
     // Debug: Log the images being saved
-    console.log('Images being saved:', images);
-    console.log('Type of images:', typeof images);
-    console.log('Is array?', Array.isArray(images));
+    // console.log('Images being saved:', images);
+    // console.log('Type of images:', typeof images);
+    // console.log('Is array?', Array.isArray(images));
     
     const property = await Property.create({
       title,
@@ -42,8 +42,8 @@ exports.createProperty = async (req, res) => {
     });
     
     // Debug: Log what was actually saved
-    console.log('Property saved with images:', property.images);
-    console.log('Type of saved images:', typeof property.images);
+    // console.log('Property saved with images:', property.images);
+    // console.log('Type of saved images:', typeof property.images);
     
     res.status(201).json(property);
   } catch (err) {
@@ -62,11 +62,11 @@ exports.getAllProperties = async (req, res) => {
     const properties = await Property.findAll({ where });
     
     // Debug: Log the first property's images to see the structure
-    if (properties.length > 0) {
-      console.log('First property images:', properties[0].images);
-      console.log('Type of images:', typeof properties[0].images);
-      console.log('Is array?', Array.isArray(properties[0].images));
-    }
+    // if (properties.length > 0) {
+    //   console.log('First property images:', properties[0].images);
+    //   console.log('Type of images:', typeof properties[0].images);
+    //   console.log('Is array?', Array.isArray(properties[0].images));
+    // }
     
     res.json(properties);
   } catch (err) {

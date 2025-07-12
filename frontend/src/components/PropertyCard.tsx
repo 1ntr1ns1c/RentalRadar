@@ -23,8 +23,8 @@ const PropertyCard: FC<PropertyCardProps> = ({ property }) => {
   const navigate = useNavigate();
 
   // Debug: Log the property data
-  console.log('PropertyCard received property:', property);
-  console.log('PropertyCard images:', property.images);
+  // console.log('PropertyCard received property:', property);
+  // console.log('PropertyCard images:', property.images);
 
   const handleClick = () => {
     navigate(`/properties/${property.id}`);
