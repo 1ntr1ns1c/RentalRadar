@@ -9,7 +9,7 @@ app.listen(PORT, () => {
 
 const corsOptions = {
   origin: [
-    "https://rentalradar-production.up.railway.app", // Your Vercel URL
+    "https://rental-radar-eight.vercel.app/", // Your Vercel URL
     "http://localhost:5173" // For local dev
   ],
   credentials: true
