@@ -12,7 +12,17 @@ const corsOptions = {
 // ✅ Apply middleware BEFORE starting server
 app.use(cors(corsOptions));
 
-const PORT = process.env.PORT || 5000;
+// const PORT = process.env.PORT || 5000;
+
+// app.listen(PORT, () => {
+//   console.log(`Server running on port ${PORT}`);
+// });
+
+const PORT = process.env.PORT;
+
+if (!PORT) {
+  throw new Error("PORT is not defined. Are you running in Railway?");
+}
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
