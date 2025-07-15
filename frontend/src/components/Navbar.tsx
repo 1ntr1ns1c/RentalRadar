@@ -14,9 +14,9 @@ const Navbar = () => {
           {/* Logo - Left */}
           <Link to="/" className="flex items-center space-x-2">
             <img 
-              src="/rentalRadar.png" 
+              src="/rentalRadarBg.png" 
               alt="RentalRadar Logo" 
-              className="h-8 w-auto" 
+              className="h-10 w-auto" 
             />
             <span className="text-xl font-bold text-blue-600">RentalRadar</span>
           </Link>
