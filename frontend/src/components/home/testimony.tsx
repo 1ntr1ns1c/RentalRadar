@@ -2,11 +2,17 @@ import { useEffect, useState } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
 
-const testimonials = [
+interface Testimonial {
+  name: string;
+  quote: string;
+  image: string;
+}
+
+const testimonials: Testimonial[] = [
   {
     name: "Kate Kimaru",
     quote:
-      "I enjoyed my stay at Meg’s Pristine – Eldoret. A wonderful & clean compound with great African food and welcoming staff.",
+      "I enjoyed my stay at Meg's Pristine – Eldoret. A wonderful & clean compound with great African food and welcoming staff.",
     image: "/users/f1.jpg",
   },
   {
@@ -18,7 +24,7 @@ const testimonials = [
   {
     name: "Wycliff Cheruiyot",
     quote:
-      "Apartment was very clean, good service... Belinda is a gem. Looking forward for another stay anytime I’m in Eldoret.",
+      "Apartment was very clean, good service... Belinda is a gem. Looking forward for another stay anytime I'm in Eldoret.",
     image: "/users/m2.jpg",
   },
   {
@@ -36,7 +42,7 @@ const testimonials = [
 ];
 
 export default function TestimonialsSection() {
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [activeIndex, setActiveIndex] = useState<number>(0);
 
   useEffect(() => {
     AOS.init({ duration: 400, once: true });
@@ -46,8 +52,7 @@ export default function TestimonialsSection() {
     return () => clearInterval(interval);
   }, []);
 
-  // Get two testimonials
-  const visible = [
+  const visibleTestimonials: Testimonial[] = [
     testimonials[activeIndex],
     testimonials[(activeIndex + 1) % testimonials.length],
   ];
@@ -63,39 +68,42 @@ export default function TestimonialsSection() {
         </h2>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {visible.map((t, i) => (
+          {visibleTestimonials.map((testimonial, index) => (
             <div
-              key={i}
+              key={`${testimonial.name}-${index}`}
               className="bg-gray-50 rounded-2xl shadow-lg p-8 flex flex-col items-center"
               data-aos="fade-up"
-              data-aos-delay={i * 150}
+              data-aos-delay={index * 150}
             >
               <img
-                src={t.image}
-                alt={t.name}
+                src={testimonial.image}
+                alt={`Photo of ${testimonial.name}`}
                 className="w-24 h-24 rounded-full mb-4 border-4 border-indigo-100 object-cover"
               />
               <p className="text-gray-600 italic text-center mb-4">
-                “{t.quote}”
+                "{testimonial.quote}"
               </p>
-              <p className="mt-auto font-semibold text-indigo-600">{t.name}</p>
+              <p className="mt-auto font-semibold text-indigo-600">
+                {testimonial.name}
+              </p>
             </div>
           ))}
         </div>
 
-        {/* Navigation */}
+        {/* Navigation Dots */}
         <div
           className="mt-10 flex justify-center space-x-3"
           data-aos="fade-up"
           data-aos-delay="200"
         >
-          {testimonials.map((_, idx) => (
+          {testimonials.map((_, index) => (
             <button
-              key={idx}
-              onClick={() => setActiveIndex(idx)}
+              key={`dot-${index}`}
+              onClick={() => setActiveIndex(index)}
               className={`w-3 h-3 rounded-full transition-transform duration-300 ${
-                idx === activeIndex ? "bg-indigo-600 scale-125" : "bg-gray-300"
+                index === activeIndex ? "bg-indigo-600 scale-125" : "bg-gray-300"
               }`}
+              aria-label={`Go to testimonial ${index + 1}`}
             />
           ))}
         </div>

@@ -1,15 +1,15 @@
 import { useState, useEffect } from "react";
-import * as api from "../lib/api";
-import { Property } from "../types/property"; // adjust path as needed
+import * as api from "../lib/api";// adjust path as needed
 import FeaturedProperties from "../components/home/featured_property";
 import FeaturesSection from "../components/home/features";
 import HeroSection from "../components/home/hero";
-import Stats from "../components/home/stats";
 import CTASection from "../components/home/cta_section";
+import type { PropertyInterface } from "../interface/property";
+import Stats from "../components/home/stats";
 import TestimonialsSection from "../components/home/testimony";
 
 export default function HomePage() {
-  const [featuredProperties, setFeaturedProperties] = useState<Property[]>([]);
+  const [featuredProperties, setFeaturedProperties] = useState<PropertyInterface[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -19,7 +19,7 @@ export default function HomePage() {
         setLoading(true);
         const response = await api.getProperties();
         const available = response.data
-          .filter((p: Property) => p.is_available)
+          .filter((p: PropertyInterface) => p.is_available)
           .slice(0, 6);
         setFeaturedProperties(available);
       } catch (err) {
