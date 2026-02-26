@@ -2,6 +2,19 @@ import { createContext, useState } from 'react';
 import type { ReactNode } from 'react';
 import * as api from '../lib/api';
 
+function getAuthErrorMessage(err: any, fallback: string): string {
+  const data = err?.response?.data;
+  if (!data) return fallback;
+  if (typeof data.message === 'string') return data.message;
+  if (typeof data.detail === 'string') return data.detail;
+  if (typeof data === 'object' && data !== null && !Array.isArray(data)) {
+    const first = Object.values(data).flat().find((v) => typeof v === 'string' || (Array.isArray(v) && v[0]));
+    if (Array.isArray(first)) return first[0] ?? fallback;
+    if (typeof first === 'string') return first;
+  }
+  return fallback;
+}
+
 interface User {
   id: number;
   name: string;
@@ -37,7 +50,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser(userData);
       return { success: true };
     } catch (err: any) {
-      return { success: false, error: err.response?.data?.message || 'Login failed' };
+      return { success: false, error: getAuthErrorMessage(err, 'Login failed') };
     }
   };
 
@@ -49,7 +62,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser(userData);
       return { success: true };
     } catch (err: any) {
-      return { success: false, error: err.response?.data?.message || 'Registration failed' };
+      return { success: false, error: getAuthErrorMessage(err, 'Registration failed') };
     }
   };
 

@@ -5,6 +5,8 @@ import FilterSidebar from '../components/FilterSidebar';
 import * as api from '../lib/api';
 
 export default function PropertiesPage() {
+  // const [properties, setProperties] = useState<any[]>([]);
+  // const [filteredProperties, setFilteredProperties] = useState<any[]>([]);
   const [properties, setProperties] = useState<any[]>([]);
   const [filteredProperties, setFilteredProperties] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -22,20 +24,26 @@ export default function PropertiesPage() {
   // Fetch all properties
   useEffect(() => {
     const fetchProperties = async () => {
-      try {
-        setLoading(true);
-        const response = await api.getProperties();
-        setProperties(response.data);
-        setFilteredProperties(response.data);
-      } catch (err) {
-        setError('Failed to load properties');
-        console.error('Error fetching properties:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  try {
+    setLoading(true);
+    const response = await api.getProperties();
+    
+    // Handle paginated response ({ results: [...] }) or plain array
+    const data = Array.isArray(response.data)
+      ? response.data
+      : response.data.results ?? [];
 
-    fetchProperties();
+    setProperties(data);
+    setFilteredProperties(data);
+  } catch (err) {
+    setError('Failed to load properties');
+    console.error('Error fetching properties:', err);
+  } finally {
+    setLoading(false);
+  }
+};
+
+ fetchProperties();
   }, []);
 
   // Apply filters
