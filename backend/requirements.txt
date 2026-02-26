@@ -1,0 +1,9 @@
+# Django 5.x required for Python 3.14 (4.x triggers sessions.serializers ModuleNotFoundError)
+Django>=5.0,<6
+djangorestframework>=3.16
+djangorestframework-simplejwt>=5.3
+django-cors-headers>=4.3
+django-filter>=23.5
+django-environ>=0.11
+psycopg2-binary>=2.9
+django-ratelimit>=4.1

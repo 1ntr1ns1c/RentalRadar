@@ -19,12 +19,12 @@
 - **React Hook Form** (form handling)
 - **Zod/Yup** *(optional)* – validation
 
-### Backend:
-- **Node.js + Express.js**
-- **MySQL** (Relational DB)
-- **JWT** (Authentication)
-- **bcryptjs** (Password hashing)
-- **dotenv** (Environment management)
+### Backend (Django):
+- **Django 4.x** + **Django REST Framework** + **SimpleJWT**
+- **PostgreSQL** (via `DATABASE_URL`)
+- **django-environ**, **django-cors-headers**, **django-filter**, **django-ratelimit**
+
+*(Legacy: Node.js + Express + MySQL is in `/backend`.)*
 
 ### Hosting & Tools:
 - **Vercel** or **Netlify** (Frontend hosting)
@@ -98,12 +98,26 @@
 
 ---
 
+## 🐍 Django backend (backend)
+
+The primary backend is Django + DRF + PostgreSQL. Setup:
+
+1. `cd backend` → copy `.env.example` to `.env`, set `DATABASE_URL` and `SECRET_KEY`.
+2. `pip install -r requirements.txt` → `python manage.py migrate` → `python manage.py runserver`.
+3. Optional: `python manage.py createsystemsuperuser --email admin@example.com --password YourPassword`.
+
+**Frontend:** set `VITE_API_URL` to the Django API base (e.g. `http://localhost:8000/api`). The React app uses the same endpoints: `/api/auth/register`, `/api/auth/login`, `/api/properties`, `/api/inquiries`, etc. Login/register responses include `token` (access) and `refresh`; use `token` in `Authorization: Bearer <token>`.
+
+See `backend/README.md` for full API table, Docker, and production notes.
+
+---
+
 ## 🌍 Deployment Plan
 | Component  | Platform     |
 |------------|--------------|
 | Frontend   | Vercel       |
-| Backend    | Railway      |
-| Database   | PlanetScale  |
+| Backend    | Railway / any (Django + Postgres) |
+| Database   | PostgreSQL   |
 | Media      | Cloudinary   |
 
 ---
@@ -114,13 +128,6 @@
 - SMS or email notifications
 - Progressive Web App (PWA) support
 - Booking calendar
-
----
-
-## 🧠 Author
-**Isaac Ferdinand**  
-Full-stack Developer  
-[LinkedIn](#) | [Portfolio](#)
 
 ---
 
