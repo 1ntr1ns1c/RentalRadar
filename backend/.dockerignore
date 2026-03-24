@@ -1,2 +1,22 @@
-venv
+# backend/.dockerignore
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info
+.eggs
+dist/
+build/
+.git
+.gitignore
 .env
+*.log
+logs/
+media/
+staticfiles/
+
+# Exclude the local venv — Docker installs its own
+venv/
+.venv/
+env/

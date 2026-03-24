@@ -1,0 +1,82 @@
+# RentalRadar — full stack Docker Compose
+# Runs: PostgreSQL + Django backend + Next.js frontend
+#
+# Usage:
+#   docker-compose up --build          # first time
+#   docker-compose up                  # subsequent runs
+#   docker-compose down                # stop everything
+#   docker-compose down -v             # stop + delete DB volume
+#
+# Run migrations (first time or after model changes):
+#   docker-compose exec web python manage.py migrate
+#
+# Create a superuser:
+#   docker-compose exec web python manage.py createsystemsuperuser --email admin@example.com --password yourpassword
+
+services:
+
+  # ── PostgreSQL ──────────────────────────────────────────────────────────────
+  db:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: rentalradar
+      POSTGRES_PASSWORD: rada.rental
+      POSTGRES_DB: rentalradar
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"          # expose locally so you can still use pgAdmin / psql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rentalradar"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ── Django backend ──────────────────────────────────────────────────────────
+  web:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./backend:/app          # live-reload: code changes reflect immediately
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env
+    environment:
+      # Override specific values for the Docker network
+      DATABASE_URL: postgres://rentalradar:rada.rental@db:5432/rentalradar
+      DEBUG: "True"
+      ALLOWED_HOSTS: "*"
+      # Allow requests from the Next.js container and local browser
+      CORS_ALLOWED_ORIGINS: "http://localhost:3000,http://127.0.0.1:3000,http://frontend:3000"
+      SECURE_SSL_REDIRECT: "False"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # ── Next.js frontend ────────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      # Direct connection to Django — no proxy needed
+      NEXT_PUBLIC_API_URL: http://localhost:8000/api
+      NEXT_PUBLIC_USE_PROXY: "false"
+      NODE_ENV: development
+    volumes:
+      - ./frontend:/app                        # live-reload
+      - /app/node_modules                      # keep container node_modules isolated
+      - /app/.next                             # keep build cache isolated
+    depends_on:
+      - web
+
+volumes:
+  postgres_data:
