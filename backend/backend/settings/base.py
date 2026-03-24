@@ -29,7 +29,7 @@ env = environ.Env(
     JWT_REFRESH_DAYS=(int, 7),
     
     # CORS
-    CORS_ALLOWED_ORIGINS=(list, ['http://localhost:5173', 'http://127.0.0.1:5173']),
+    CORS_ALLOWED_ORIGINS=(list, ['http://localhost:3000', 'http://127.0.0.1:3000']),
     
     # Security
     CSRF_TRUSTED_ORIGINS=(list, []),
@@ -46,6 +46,7 @@ if env_file.exists():
 # Core Django Settings
 SECRET_KEY = env('SECRET_KEY')
 DEBUG = env('DEBUG')
+APPEND_SLASH = True
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 
 # Application definition
